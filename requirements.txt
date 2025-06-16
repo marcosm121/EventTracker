@@ -1,0 +1,7 @@
+fastapi
+pydantic
+python-dotenv
+httpx
+uvicorn
+cachetools
+nanoid
