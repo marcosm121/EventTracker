@@ -1,5 +1,4 @@
 from mongo.mongoManager import mongoEventManger
-import uuid
 
 
 class eventManager:

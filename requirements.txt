@@ -5,3 +5,4 @@ httpx
 uvicorn
 cachetools
 nanoid
+pymongo
