@@ -6,6 +6,7 @@ from functools import wraps
 from authenticator.authManager import authManager
 from mongo.mongoManager import mongoLogManager
 from eventer.eventManager import eventManager
+from fastapi.middleware.cors import CORSMiddleware
 import time
 import json
 
@@ -15,6 +16,19 @@ app = FastAPI()
 authenticator = authManager()
 mongoLog = mongoLogManager()
 eventManager = eventManager()
+
+# Lista de orígenes permitidos
+origins = [
+    "*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 
 # Logging middleware
