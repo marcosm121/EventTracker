@@ -6,7 +6,7 @@ import os
 class mongoAuthManager:
     
     def __init__(self):
-        client = MongoClient(f"mongodb://{os.getenv('MONGO_URL')}/")
+        client = MongoClient(f"mongodb+srv://{os.getenv('MONGO_URL')}/")
         
         db = client["service"]
         self.coleccionAuth = db["apikeys"]
@@ -27,7 +27,7 @@ class mongoAuthManager:
 class mongoLogManager:
     
     def __init__(self):
-        client = MongoClient(f"mongodb://{os.getenv('MONGO_URL')}/")
+        client = MongoClient(f"mongodb+srv://{os.getenv('MONGO_URL')}/")
         
         db = client["service"]
         self.coleccionAuth = db["logs"]
@@ -41,7 +41,7 @@ class mongoLogManager:
 
 class mongoEventManger:
     def __init__(self):
-        client = MongoClient(f"mongodb://{os.getenv('MONGO_URL')}/")
+        client = MongoClient(f"mongodb+srv://{os.getenv('MONGO_URL')}/")
         
         self.db = client["events"]
 
