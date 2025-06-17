@@ -121,11 +121,12 @@ async def service(request: Request):
     api_key = request.headers.get('Authorization')
     body_bytes = await request.body()  # Obtiene el body en bytes
     body_str = body_bytes.decode("utf-8")  # Convierte a string
-    body = json.loads(body_str)
+    event = json.loads(body_str)
+    event['client_ip'] = get_client_ip(request)
     try:
         # score = await requester.get_score(inputs)
         coleccion = authenticator.get_coleccion(api_key)
-        eventManager.track_event(body, coleccion)
+        eventManager.track_event(event, coleccion)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error llamando model: {e}")
 
@@ -138,4 +139,17 @@ async def generate_key():
     return data
 
 
-
+# FUNCIONES AUXILIARES
+def get_client_ip(request: Request) -> str:
+    # Verifica X-Forwarded-For primero
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    
+    # Fallback a X-Real-IP
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip
+    
+    # Si no hay proxy, usa request.client.host
+    return request.client.host if request.client else "unknown"
