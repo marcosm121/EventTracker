@@ -7,6 +7,7 @@ from authenticator.authManager import authManager
 from mongo.mongoManager import mongoLogManager
 from eventer.eventManager import eventManager
 from fastapi.middleware.cors import CORSMiddleware
+import os
 import time
 import json
 
@@ -134,7 +135,10 @@ async def service(request: Request):
 
 
 @app.get("/generate")
-async def generate_key():
+async def generate_key(request: Request):
+    admin_key = request.headers.get("X-Admin-Key")
+    if not admin_key or admin_key != os.getenv("ADMIN_KEY"):
+        raise HTTPException(status_code=401, detail="Unauthorized")
     data = authenticator.generate_key("premium")
     return data
 

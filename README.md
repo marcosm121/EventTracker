@@ -20,7 +20,7 @@ Cada API key tiene asociado un `col_id` único, que determina la colección de M
 |--------|------|-------------|------|
 | GET | `/` | Health check | No |
 | POST | `/event` | Trackea un evento | Si (API key) |
-| GET | `/generate` | Genera una API key premium | No |
+| GET | `/generate` | Genera una API key premium | Si (Admin key) |
 
 ### POST /event
 
@@ -39,6 +39,22 @@ Authorization: <api_key>
   "timestamp": "2026-04-05T10:00:00Z"
 }
 ```
+
+### GET /generate
+
+Genera una nueva API key con tier premium y la persiste en MongoDB. Requiere autenticación mediante admin key.
+
+**Header requerido:**
+```
+X-Admin-Key: <ADMIN_KEY>
+```
+
+**Respuesta:**
+```
+"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```
+
+La key devuelta es la que el cliente debe usar en el header `Authorization` para llamar a `/event`.
 
 ## Rate Limiting
 
@@ -82,6 +98,7 @@ Variables de entorno requeridas (via `.env`):
 
 ```
 MONGO_URL=<usuario>:<password>@<host>
+ADMIN_KEY=<secret>
 ```
 
 ## Correr con Docker
@@ -97,3 +114,9 @@ docker run -p 8000:0000 --env-file .env eventtracker
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+
+## Notas
+
+- **Rate limiting in-memory**: el conteo de requests por API key se guarda en memoria del proceso. Si el servicio corre con múltiples workers o se reinicia, el contador se resetea. Para producción habría que usar un store compartido (ej. Redis).
+- **CORS abierto**: la API acepta requests de cualquier origen (`*`). Está pensado para facilitar la integración durante desarrollo; en un entorno productivo convendría restringirlo a los orígenes conocidos.
+- **Logs guardan el body completo**: cada request queda registrado en MongoDB incluyendo el body. Si se procesan datos sensibles, habría que filtrar o sanitizar antes de persistir.
